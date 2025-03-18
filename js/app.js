@@ -1,70 +1,71 @@
-// Transaction Management
-const transactionForm = document.getElementById('transactionForm');
-const transactionList = document.getElementById('transactionList');
-const totalIncomeEl = document.getElementById('totalIncome');
-const totalExpensesEl = document.getElementById('totalExpenses');
-const netIncomeEl = document.getElementById('netIncome');
+document.addEventListener("DOMContentLoaded", function () {
+    const transactionForm = document.getElementById("transactionForm");
+    const transactionList = document.getElementById("transactionList");
+    const totalIncomeEl = document.getElementById("totalIncome");
+    const totalExpensesEl = document.getElementById("totalExpenses");
+    const netIncomeEl = document.getElementById("netIncome");
+    const downloadPdfBtn = document.getElementById("downloadPdf");
 
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
 
-const renderTransactions = () => {
-    transactionList.innerHTML = '';
-    transactions.forEach((transaction, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            ${transaction.date} - ${transaction.description} - ${transaction.category} - ${transaction.amount}
-            <button onclick="deleteTransaction(${index})">Delete</button>
-        `;
-        transactionList.appendChild(li);
-    });
-    calculateSummary();
-};
+    function updateSummary() {
+        let totalIncome = transactions.filter(t => t.category === "Income").reduce((sum, t) => sum + t.amount, 0);
+        let totalExpenses = transactions.filter(t => t.category !== "Income").reduce((sum, t) => sum + t.amount, 0);
 
-const addTransaction = (transaction) => {
-    transactions.push(transaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-    renderTransactions();
-};
-
-const deleteTransaction = (index) => {
-    transactions.splice(index, 1);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-    renderTransactions();
-};
-
-const calculateSummary = () => {
-    const totalIncome = transactions
-        .filter(transaction => transaction.category === 'Income')
-        .reduce((acc, transaction) => acc + parseFloat(transaction.amount), 0);
-    const totalExpenses = transactions
-        .filter(transaction => transaction.category !== 'Income')
-        .reduce((acc, transaction) => acc + parseFloat(transaction.amount), 0);
-    const netIncome = totalIncome - totalExpenses;
-
-    totalIncomeEl.textContent = totalIncome.toFixed(2);
-    totalExpensesEl.textContent = totalExpenses.toFixed(2);
-    netIncomeEl.textContent = netIncome.toFixed(2);
-};
-
-transactionForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const date = document.getElementById('date').value;
-    const description = document.getElementById('description').value;
-    const category = document.getElementById('category').value;
-    const amount = document.getElementById('amount').value;
-
-    if (date && description && category && amount) {
-        const transaction = {
-            date,
-            description,
-            category,
-            amount: parseFloat(amount)
-        };
-        addTransaction(transaction);
-        transactionForm.reset();
-    } else {
-        alert('Please fill in all fields');
+        totalIncomeEl.textContent = `₹${totalIncome}`;
+        totalExpensesEl.textContent = `₹${totalExpenses}`;
+        netIncomeEl.textContent = `₹${totalIncome - totalExpenses}`;
     }
-});
 
-renderTransactions();
+    function addTransactionToUI(transaction) {
+        const li = document.createElement("li");
+        li.innerHTML = `${transaction.date} - ${transaction.description} 
+            <strong>₹${transaction.amount}</strong> (${transaction.category})
+            <button class="delete-btn">X</button>`;
+
+        li.querySelector(".delete-btn").addEventListener("click", () => {
+            deleteTransaction(transaction.id);
+        });
+
+        transactionList.appendChild(li);
+    }
+
+    function deleteTransaction(id) {
+        transactions = transactions.filter(t => t.id !== id);
+        localStorage.setItem("transactions", JSON.stringify(transactions));
+        updateUI();
+    }
+
+    function updateUI() {
+        transactionList.innerHTML = "";
+        transactions.forEach(addTransactionToUI);
+        updateSummary();
+    }
+
+    transactionForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const transaction = {
+            id: Date.now().toString(),
+            date: document.getElementById("date").value,
+            description: document.getElementById("description").value,
+            category: document.getElementById("category").value,
+            amount: parseFloat(document.getElementById("amount").value)
+        };
+
+        transactions.push(transaction);
+        localStorage.setItem("transactions", JSON.stringify(transactions));
+        updateUI();
+        transactionForm.reset();
+    });
+
+    downloadPdfBtn.addEventListener("click", function () {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("Expense Report", 20, 20);
+        transactions.forEach((t, i) => doc.text(`${t.date} - ${t.description}: ₹${t.amount} (${t.category})`, 20, 40 + i * 10));
+        doc.save("Expense_Report.pdf");
+    });
+
+    updateUI();
+});

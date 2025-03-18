@@ -4,20 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense Tracker</title>
-    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <video autoplay muted loop id="background-video">
+        <source src="money.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
     <header>
         <h1>Expense Tracker</h1>
     </header>
+
     <main>
         <section class="input-section">
             <h2>Add Transaction</h2>
             <form id="transactionForm">
                 <label for="date">Date:</label>
                 <input type="date" id="date" required>
+
                 <label for="description">Description:</label>
                 <input type="text" id="description" required>
+
                 <label for="category">Category:</label>
                 <select id="category" required>
                     <option value="Income">Income</option>
@@ -25,22 +38,33 @@
                     <option value="Transportation">Transportation</option>
                     <option value="Entertainment">Entertainment</option>
                 </select>
+
                 <label for="amount">Amount:</label>
                 <input type="number" id="amount" required>
-                <button type="submit">Add Transaction</button>
+
+                <button type="submit" class="btn">Add Transaction</button>
             </form>
         </section>
+
         <section class="summary-section">
             <h2>Summary</h2>
             <p>Total Income: <span id="totalIncome">0</span></p>
             <p>Total Expenses: <span id="totalExpenses">0</span></p>
             <p>Net Income: <span id="netIncome">0</span></p>
+            <button class="download-btn" id="downloadPdf">Download Report (PDF)</button>
         </section>
+
         <section class="transactions-section">
             <h2>Transactions</h2>
             <ul id="transactionList"></ul>
         </section>
     </main>
-    <script src="js/app.js"></script>
+
+    <footer class="footer-custom">
+        <p>&copy; 2024 <strong>Manas Prabhu</strong>. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
