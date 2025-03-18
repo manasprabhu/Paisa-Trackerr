@@ -12,10 +12,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <video autoplay muted loop id="background-video">
-        <source src="money.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+    <div class="video-container">
+        <video autoplay muted loop id="background-video">
+            <source src="money.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
 
     <header>
         <h1>Expense Tracker</h1>
@@ -37,6 +39,7 @@
                     <option value="Food">Food</option>
                     <option value="Transportation">Transportation</option>
                     <option value="Entertainment">Entertainment</option>
+                    <option value="Others">Others</option>
                 </select>
 
                 <label for="amount">Amount:</label>
@@ -48,10 +51,11 @@
 
         <section class="summary-section">
             <h2>Summary</h2>
-            <p>Total Income: <span id="totalIncome">0</span></p>
-            <p>Total Expenses: <span id="totalExpenses">0</span></p>
-            <p>Net Income: <span id="netIncome">0</span></p>
+            <p>Total Income: <span id="totalIncome">₹0</span></p>
+            <p>Total Expenses: <span id="totalExpenses">₹0</span></p>
+            <p>Net Income: <span id="netIncome">₹0</span></p>
             <button class="download-btn" id="downloadPdf">Download Report (PDF)</button>
+            <button class="reset-btn" id="resetData">Reset Data</button>
         </section>
 
         <section class="transactions-section">
@@ -61,10 +65,14 @@
     </main>
 
     <footer class="footer-custom">
-        <p>&copy; 2024 <strong>Manas Prabhu</strong>. All Rights Reserved.</p>
+        <p>&copy; <span id="year"></span> <strong>Manas Prabhu</strong>. All Rights Reserved.</p>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="app.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Set current year dynamically in footer
+        document.getElementById("year").innerText = new Date().getFullYear();
+    </script>
 </body>
 </html>
